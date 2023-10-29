@@ -34,6 +34,7 @@ int tail(int N){
     }
     cadena[N] = (char*)malloc(sizeof(char)*BUFFERSIZE);         //Reservamos espacio para leer la linea N+1
     while(fgets(cadena[N], BUFFERSIZE, stdin)!=NULL){           //Cargamos en la posicion N+1 del array de cadenas de caracteres las nuevas frases que se van leyendo por stdin
+        free(cadena[0]);                                        //Como la cadena en la primera posicion del array de cadenas se va a perder en el bucle for, debemos hacer un free antes de modificar el puntero
         for (i=0; i<N; i++){
             cadena[i]=cadena[i+1];                              //Cada puntero apunta a la posicion siguiente, donde se encuentra una linea con menor antigüedad
         }
@@ -46,7 +47,7 @@ int tail(int N){
     return 0;
 }
 
-int ordenar(char **cadena, int tope, int max){                  //Funcion auxiliar que sirve para ordenar N lineas. Se van intercambiando las lineas de una en una, quedando en la posicion N+1 la de menor longitud que posteriormente sera eliminada
+int ordenar(char **cadena, int max){                  //Funcion auxiliar que sirve para ordenar N lineas. Se van intercambiando las lineas de una en una, quedando en la posicion N+1 la de menor longitud que posteriormente sera eliminada
     int j;
     for(j=0;j<max;j++){
         if(strlen(cadena[j])<strlen(cadena[max])){              //Si la longitud de una linea es menor a la longitud de la ultima, se cambian de sitio
@@ -55,6 +56,7 @@ int ordenar(char **cadena, int tope, int max){                  //Funcion auxili
             strcpy(aux, cadena[max]);
             strcpy(cadena[max], cadena[j]);                     //Se guarda en la posicion N+1 del array de cadenas la cadena de menor longitud
             strcpy(cadena[j], aux);                             //En la posicion j del array de cadenas de caracteres en la que estamos se guarda la nueva linea que se ha leido, o en su defecto, otra linea que es de mayor longitud
+            free(aux);                                          //Liberamos el espacio de la variable auxiliar
         }
     }
 
@@ -74,10 +76,11 @@ int longlines(int N){
     i=0;
     fgets(cadena[i], BUFFERSIZE, stdin);                                //Se lee la primera linea de todas
     while(fgets(cadena[N], BUFFERSIZE, stdin)!=NULL){                   //Se leen la segunda y demas lineas que se introducen por stdin
-        ordenar(cadena, i, N);                                          //Ordenamos las N lineas de mayor a menor longitud
+        ordenar(cadena, N);                                             //Ordenamos las N lineas de mayor a menor longitud
         if(i!=(N-1)){
             i++;
         }
+        free(cadena[N]);                                                //Liberamos el espacio ocupado por la ultima posicion del array de caracteres, ya que su numero de caracteres no es suficiente para ser impreso por pantalla
         cadena[N]=(char*)malloc(BUFFERSIZE*sizeof(char));
     }
 
